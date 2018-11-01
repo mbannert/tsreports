@@ -1,0 +1,50 @@
+---
+params:
+  spec: list()
+  tslist: list()
+title: "`r params$spec$report_title`"
+author: "`r params$spec$authors`"
+date: "11/1/2018"
+output: html_document
+---
+
+Probably not 100% what we're looking for (as it does not produce an intermediate Rmd to manually edit, though
+that could be circumvented by allowing more than just plots in the "cells" making up the report) but **dank cool** nonetheless!
+
+```{r echo=FALSE}
+spec <- params$spec
+tslist <- params$tslist
+global_theme <- do.call(init_tsplot_theme, spec$global_tsplot_theme)
+
+for(i in seq_along(spec$plots)) {
+  plt <- spec$plots[[i]]
+  
+  them <- global_theme
+  them[names(plt$theme)] <- plt$theme
+  
+  prmtrs <- list()
+  spec_prmtrs <- plt$tsplot_prmtrs
+  prmtrs[names(spec_prmtrs)] <- spec_prmtrs
+  
+  if(!is.null(plt$plot_title)) {
+    prmtrs[["plot_title"]] <- plt$plot_title
+  }
+  
+  if(!is.null(plt$plot_subtitle)) {
+    prmtrs[["plot_subtitle"]] <- plt$plot_subtitle
+  }
+  
+  if(!is.null(plt$window)) {
+    prmtrs[["tsl"]] <- lapply(tslist[plt$series], function(x) {
+      ar <- plt$window
+      ar$x <- x
+      do.call(window, ar)
+    })
+  } else {
+    prmtrs[["tsl"]] <- tslist[plt$series]
+  }
+  prmtrs[["theme"]] <- them
+  
+  do.call(tstools:::tsplot.list, prmtrs)
+}
+```

@@ -73,3 +73,6 @@ for(i in seq_along(spec$plots)) {
   message(sprintf("Behold, plot no. %d defined hereabouts!!!", i))
   Sys.sleep(3)
 }
+
+
+rmarkdown::render(input = "test_sthoeni.Rmd", params = list(spec = spec, tslist = tslist))
