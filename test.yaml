@@ -1,13 +1,11 @@
----
-title: "test"
-author: "mba"
-date: "11/1/2018"
-output: html_document
-cooler: than a polar bear's toe nails
----
+tsplot1:
+  title: KOF Barometer
+  series:
+    - ch.kof.barometer
 
-tsplot: 
-  series1: ch.kof.barometer
+tsplot2:
+  title: KOF Business Situation
+  series:
+    - ch.kof.inu.ng08.fx.q_ql_ass.balance
+    - ch.kof.bau.ng08.fx.q_ql_ass.balance
 
-tsplot:
-  series: ch.kof.mpc
