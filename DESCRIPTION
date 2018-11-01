@@ -1,0 +1,27 @@
+Package: tsreports
+Type: Package
+Version: 0.1
+Title: Define Simple Time Series Based Rmarkdown Reports in Yaml
+Description: Use yaml to define simple time series reports.
+Authors@R: c(
+    person("Matthias", "Bannert", , "bannert@kof.ethz.ch", c("aut", "cre")))
+Depends:
+    R (>= 3.0.0)
+Imports:
+    tstools,
+    yaml,
+    knitr,
+    rmarkdown
+Suggests:
+    testthat,
+    timeseriesdb
+VignetteBuilder: knitr
+Date: 2018-11-01
+License: GPL-2
+LazyData: true
+Maintainer: Matthias Bannert <bannert@kof.ethz.ch>
+NeedsCompilation: no
+Packaged: 2018-04-24 11:21:04 UTC; mbannert
+Author: Matthias Bannert [aut, cre],
+  Severin Thoeni [aut]
+RoxygenNote: 6.0.1
