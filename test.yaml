@@ -1,0 +1,13 @@
+---
+title: "test"
+author: "mba"
+date: "11/1/2018"
+output: html_document
+cooler: than a polar bear's toe nails
+---
+
+tsplot: 
+  series1: ch.kof.barometer
+
+tsplot:
+  series: ch.kof.mpc
