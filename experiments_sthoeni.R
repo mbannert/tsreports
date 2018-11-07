@@ -74,5 +74,7 @@ for(i in seq_along(spec$plots)) {
   Sys.sleep(3)
 }
 
-
+#########################################
+# WHATCH THE MAGIC HAPPEN
+#########################################
 rmarkdown::render(input = "test_sthoeni.Rmd", params = list(spec = spec, tslist = tslist))

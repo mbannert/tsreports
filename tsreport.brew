@@ -1,0 +1,59 @@
+---
+output: 
+  pdf_document:
+    keep_tex: TRUE
+documentclass: article
+classoption: 
+  - twoside
+params:
+  year: 666
+  month: 6
+  tslist: list()
+---
+\twocolumn
+```{r, echo = FALSE}
+<%= cat(sprintf("global_theme <- init_tsplot_theme(%s)\n\n", 
+        paste(
+          sprintf("%s = %s", 
+                  names(spec$global_tsplot_theme),
+                  spec$global_tsplot_theme),
+          collapse =",\n    ")
+        ))-%>
+```
+
+<% for(i in seq_along(spec$plots)) { 
+  plt <- spec$plots[[i]]
+  
+  parms <- plt$tsplot_params
+    if(!is.null(plt$plot_title)) {
+      parms$plot_title <- plt$plot_title
+    }
+    if(!is.null(plt$plot_subtitle)) {
+      parms$plot_subtitle <- plt$plot_subtitle
+    }
+-%>
+```{r, fig.align='right', fig.height=4.5, echo = FALSE}
+<% if(!is.null(plt$theme)) { -%>
+<%# More readable this way instead of one super assignment via keys %>
+<%    cat(sprintf("local_theme <- global_theme\n%s\n\n", 
+          paste(sprintf("local_theme$%s = %s", names(plt$theme), plt$theme), collapse = "\n")
+          ))-%>
+<% } -%>
+<%  
+  cat(sprintf("tsplot(\n%s,\n    theme = local_theme%s)\n\n",
+          ifelse(is.null(plt$labels),
+                 sprintf("    list(%s)", paste(sprintf("tslist$%s", plt$series), collapse = ",\n")),
+                 paste(sprintf("    \"%s\" = tslist$%s", plt$labels, plt$series), collapse = ",\n")),
+          ifelse(is.null(plt$tsplot_params),
+                 "",
+                 paste0(",\n", paste(sprintf("    %s = %s", names(plt$tsplot_params), plt$tsplot_params), collapse = ",\n")))
+  ))-%>
+```
+<% if(i %% 3 == 0) { %>
+\eject
+<% } else { %>
+\vfill
+<% } %>
+
+<%}-%>
+
