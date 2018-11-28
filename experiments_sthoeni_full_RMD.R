@@ -14,7 +14,7 @@ global_tsplot_theme:
     - 1
     - 5
     - 3
-plots:
+boxes:
   - plot_title: Baro
     plot_subtitle: meter
     tsplot_params:
@@ -24,7 +24,10 @@ plots:
   - plot_title: mpc
     series:
       - ts2
-  - plot_title: survey stuff
+  - type: text
+    content: \"hier steht was mit worten und so. Worte sagen weniger, als 1/1000 bild!!latex supported!\"
+  - type: plot
+    plot_title: survey stuff
     series:
       - ts3
       - ts4
@@ -114,5 +117,7 @@ tsplot(
 # Again, we saved the best part for last
 ######################################################
 library(brew)
-brew("tsreport.brew", "tsreport.Rmd")
+brewenv <- new.env(parent = baseenv())
+brewenv$spec <- yaml::read_yaml("minimal.yaml")
+brew("tsreport.brew", "tsreport.Rmd", envir = brewenv)
 rmarkdown::render("tsreport.Rmd", params = list(tslist = tslist))
