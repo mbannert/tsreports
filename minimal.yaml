@@ -1,0 +1,8 @@
+boxes:
+  - series:
+      - ts1
+  - series:
+      - ts2
+  - series:
+      - ts3
+      - ts4
