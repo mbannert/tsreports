@@ -33,9 +33,10 @@ params:
     }
 -%>
 ```{r, fig.align='right', fig.height=4.5, echo = FALSE}
+  local_theme <- global_theme
 <% if(!is.null(plt$theme)) { -%>
 <%# More readable this way instead of one super assignment via keys %>
-<%    cat(sprintf("local_theme <- global_theme\n%s\n\n", 
+<%    cat(sprintf("%s\n\n", 
           paste(sprintf("local_theme$%s = %s", names(plt$theme), plt$theme), collapse = "\n")
           ))-%>
 <% } -%>
