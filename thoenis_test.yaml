@@ -1,0 +1,40 @@
+report_title: some title
+report_subtitle: some subtitle
+authors: the KOF gang
+date: 2018-11-01
+layout: two_columns 
+global_tsplot_theme:
+  sum_as_line: TRUE
+  lwd:
+    - 1
+    - 5
+    - 3
+boxes:
+  - plot_title: Baro
+    plot_subtitle: meter
+    tsplot_params:
+      left_as_bar: TRUE
+    series:
+      - ts1
+  - plot_title: mpc
+    series:
+      - ts2
+  - type: text
+    content: "hier steht was mit worten und so. Worte sagen weniger, als 1/1000 bild!!\\\\\\LaTeX supported (kinda sorta)!"
+  - type: plot
+    plot_title: survey stuff
+    series:
+      - ts3
+      - ts4
+    labels:
+      - 'a time series'
+      - 'look, anothe rone!'
+    theme: # Augment of override global_tsplot_theme
+      line_colors: 
+        - "#000000"
+        - "#0f892b"
+    window:
+      start: 1989
+      end: 1990
+  - type: text
+    content: 'Der plot da drueben... er enthaelt Zeitreihen'
