@@ -92,16 +92,24 @@ header-includes:
     <% } else { %>
         tsl_plot <- lapply(tsl_plot, window, start = <%=plt$window$start%>, end = <%=plt$window$end%>)
     <% }
-    }%>
-    <%        quotes <- get_param_quotes(plt$tsplot_params)
+    } 
+      plot_params <- list()
+      if(!is.null(spec$global_tsplot_params)) {
+        plot_params <- spec$global_tsplot_params
+      }
+      if(!is.null(plt$tsplot_params)) {
+        plot_params[names(plt$tsplot_params)] <- plt$tsplot_params
+      }%>
+      
+    <%        quotes <- get_param_quotes(plot_params)
             cat(sprintf("tsplot(\n%s%s%s)\n\n",
               ifelse(is.null(plt$labels),
                      sprintf("    list(%s)", paste(sprintf("tsl_plot$%s", plt$series), collapse = ",\n")),
                      paste(sprintf("    \"%s\" = tsl_plot$%s", plt$labels, plt$series), collapse = ",\n")),
               ifelse(is.null(plt$tsplot_params),
                      "",
-                     paste0(",\n", paste(sprintf("    %s = %s%s%s", names(plt$tsplot_params), quotes, plt$tsplot_params, quotes), collapse = ",\n"))),
-              ifelse(is.null(plt$theme), "", ",\n    theme = local_theme")
+                     paste0(",\n", paste(sprintf("    %s = %s%s%s", names(plot_params), quotes, plot_params, quotes), collapse = ",\n"))),
+              ",\n    theme = local_theme"
       ))-%>
 ```
   <% } else { %>
