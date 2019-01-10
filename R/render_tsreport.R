@@ -10,20 +10,34 @@
 #' @export
 #'
 render_tsreport <- function(spec, tslist, keep_tex = FALSE, keep_rmd = FALSE) {
-  all_spec_keys <- unique(unlist(lapply(spec$boxes, `[[`, series)))
+  all_spec_keys <- unique(unlist(lapply(spec$boxes, `[[`, "series")))
   all_list_keys <- names(tslist)
   if(length(missing_keys <- setdiff(all_spec_keys, all_list_keys)) > 0) {
     stop(sprintf("Some of the specified series are missing from tslist:\n %s", paste(missing_keys, collapse = "\n ")))
   }
   
-  
+  # Map titles into tsplot_params where the brew template expects them
+  spec$boxes <- lapply(spec$boxes, function(b) {
+    if(is.null(b$type) || b$type == "plot") {
+      if(!is.null(b$plot_title)) {
+        b$tsplot_params$plot_title <- b$plot_title
+      }
+      
+      if(!is.null(b$plot_subtitle)) {
+        b$tsplot_params$plot_subtitle <- b$plot_subtitle
+      }
+    }
+    b
+  })
+    
+    
   brewenv <- new.env(parent = baseenv())
   brewenv$spec <- spec
-  brewenv$keep_tex <- keep_tex
+  brewenv$keep_tex <- as.character(keep_tex)
   
-  title <- if_else(
+  title <- ifelse(
     is.null(spec$report_title),
-    paste0("tsreport_", Sys.time()),
+    paste0("tsreport_"),
     spec$report_title
   )
   
