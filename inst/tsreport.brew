@@ -72,17 +72,32 @@ header-includes:
     if(is.null(plt$type) || plt$type == "plot") { %>
 ```{r, fig.align='right', fig.height=4.5, echo = FALSE}
   local_theme <- global_theme
+    
     <% if(!is.null(plt$theme)) {
           theme_quotes <- get_param_quotes(plt$theme)
           cat(sprintf("%s\n\n", 
                 paste(sprintf("local_theme$%s = %s%s%s", names(plt$theme), theme_quotes, plt$theme, theme_quotes), collapse = "\n")
                 ))
-    } 
-            quotes <- get_param_quotes(plt$tsplot_params)
+    }
+    cat(sprintf("tsl_plot <- tslist[c(%s)]\n", paste(sprintf("\"%s\"", plt$series), collapse = ", ")))
+    
+    if(!is.null(plt$window)) {
+      if(!is.null(plt$window$length)) { %>
+        tsl_plot <- lapply(tsl_plot, function(x) {
+          e <- end(x)
+          l <- length(x)
+          f <- frequency(x)
+          ts(x[(l-<%=plt$window$length%>+1):l], end = e, frequency = f)
+        })
+    <% } else { %>
+        tsl_plot <- lapply(tsl_plot, window, start = <%=plt$window$start%>, end = <%=plt$window$end%>)
+    <% }
+    }%>
+    <%        quotes <- get_param_quotes(plt$tsplot_params)
             cat(sprintf("tsplot(\n%s%s%s)\n\n",
               ifelse(is.null(plt$labels),
-                     sprintf("    list(%s)", paste(sprintf("tslist$%s", plt$series), collapse = ",\n")),
-                     paste(sprintf("    \"%s\" = tslist$%s", plt$labels, plt$series), collapse = ",\n")),
+                     sprintf("    list(%s)", paste(sprintf("tsl_plot$%s", plt$series), collapse = ",\n")),
+                     paste(sprintf("    \"%s\" = tsl_plot$%s", plt$labels, plt$series), collapse = ",\n")),
               ifelse(is.null(plt$tsplot_params),
                      "",
                      paste0(",\n", paste(sprintf("    %s = %s%s%s", names(plt$tsplot_params), quotes, plt$tsplot_params, quotes), collapse = ",\n"))),
