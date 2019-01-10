@@ -1,0 +1,120 @@
+---
+output: 
+  pdf_document:
+    keep_tex: <%= keep_tex %>
+documentclass: article
+classoption: 
+  - twoside
+params:
+  year: 666
+  month: 6
+  tslist: list()
+header-includes:
+  - \usepackage{geometry}
+  - \geometry{a4paper, left=16mm, right=16mm, top=8mm, bottom=6mm, headsep=11mm, includeheadfoot}
+  - \setlength{\columnsep}{10mm}
+---
+\twocolumn
+<%# setupy stuff %>
+<%
+  n_row <- 3
+  n_col <- 2
+  get_param_quotes <- function(x) {
+    shouldquote <- sapply(x, function(xx) {
+      is.character(xx) && length(xx) == 1
+    })
+    
+    ifelse(shouldquote, "\"", "")
+  }
+  
+  n_per_page <- n_row*n_col
+  n_boxes <- length(spec$boxes)
+  page_contents <- split(spec$boxes, ceiling(seq(n_boxes)/n_per_page))
+%>
+```{r, echo = FALSE}
+<% 
+    global_theme_quotes <- get_param_quotes(spec$global_tsplot_theme)
+    cat(sprintf("global_theme <- init_tsplot_theme(\n    %s)\n\n", 
+        paste(
+          sprintf("%s = %s%s%s", 
+                  names(spec$global_tsplot_theme),
+                  global_theme_quotes,
+                  spec$global_tsplot_theme,
+                  global_theme_quotes),
+          collapse =",\n    ")
+        ))-%>
+```
+<%
+  page_nr <- 1
+  row_nr <- 1
+  col_nr <- 1
+%>
+<% for(p in page_contents) {
+  n_row_on_page <- ceiling(length(p)/n_col)
+  n_row_on_column <- n_row_on_page
+  
+  idx <- seq(n_row_on_page*n_col)
+  dim(idx) <- c(n_col, n_row_on_page)
+  idx <- c(t(idx))
+  idx <- idx[1:length(p)]
+  p <- p[idx]
+
+  for(plt in p) {
+  
+    parms <- plt$tsplot_params
+      if(!is.null(plt$plot_title)) {
+        parms$plot_title <- plt$plot_title
+      }
+      if(!is.null(plt$plot_subtitle)) {
+        parms$plot_subtitle <- plt$plot_subtitle
+      }
+
+    if(is.null(plt$type) || plt$type == "plot") { %>
+```{r, fig.align='right', fig.height=4.5, echo = FALSE}
+  local_theme <- global_theme
+    <% if(!is.null(plt$theme)) {
+          theme_quotes <- get_param_quotes(plt$theme)
+          cat(sprintf("%s\n\n", 
+                paste(sprintf("local_theme$%s = %s%s%s", names(plt$theme), theme_quotes, plt$theme, theme_quotes), collapse = "\n")
+                ))
+    } 
+            quotes <- get_param_quotes(plt$tsplot_params)
+            cat(sprintf("tsplot(\n%s%s%s)\n\n",
+              ifelse(is.null(plt$labels),
+                     sprintf("    list(%s)", paste(sprintf("tslist$%s", plt$series), collapse = ",\n")),
+                     paste(sprintf("    \"%s\" = tslist$%s", plt$labels, plt$series), collapse = ",\n")),
+              ifelse(is.null(plt$tsplot_params),
+                     "",
+                     paste0(",\n", paste(sprintf("    %s = %s%s%s", names(plt$tsplot_params), quotes, plt$tsplot_params, quotes), collapse = ",\n"))),
+              ifelse(is.null(plt$theme), "", ",\n    theme = local_theme")
+      ))-%>
+```
+  <% } else { %>
+\fbox{\parbox[c][2.5in]{\linewidth}{
+<%= plt$content %>
+\vfill
+}}
+  <% } %>
+\vfill
+  <%
+    row_nr <- row_nr + 1
+    if(row_nr > n_row_on_column) { 
+      if(n_row_on_column < n_row) {
+        for(rem_row in row_nr:n_row) {%>
+\fbox{\parbox[c][2.5in]{\linewidth}{
+I R a fillar
+\vfill
+}}
+\vfill
+      <% }
+      }%>
+\eject
+  <%  col_nr <- col_nr + 1
+      n_row_on_column <- length(p) - n_row_on_page
+      row_nr <- 1
+    }
+  %>
+  <%# End of inner/page loop %>
+  <% } %>
+<%# End of outer/document loop%>
+<%}-%>
